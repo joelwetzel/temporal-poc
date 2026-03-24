@@ -14,6 +14,7 @@ async def validate_order(order_id: str) -> dict:
     # Stub: simulate validation logic
     return {"order_id": order_id, "customer": "Jane Doe", "amount": 99.99, "valid": True}
 
+
 @activity.defn
 async def summarize_order(order_details: dict) -> str:
     activity.logger.info("Summarizing order")
@@ -22,7 +23,7 @@ async def summarize_order(order_details: dict) -> str:
         "Qwen/Qwen3-Coder-30B-A3B-Instruct",
         provider=OpenAIProvider(
             base_url="https://router.huggingface.co/v1",
-            api_key="FILL IN HERE",
+            api_key="PUT API KEY HERE",
         ),
     )
     agent = Agent(
@@ -36,6 +37,7 @@ async def summarize_order(order_details: dict) -> str:
     )
     result = await agent.run(str(order_details))
     return result.output
+
 
 @activity.defn
 async def charge_payment(order_id: str, amount: float) -> str:

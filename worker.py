@@ -2,6 +2,8 @@ import asyncio
 import logging
 from temporalio.client import Client
 from temporalio.worker import Worker
+from temporalio.contrib.pydantic import pydantic_data_converter
+from pydantic_ai.durable_exec.temporal import PydanticAIPlugin
 
 from workflows.order_workflow import OrderWorkflow
 from activities.order_activities import validate_order, summarize_order, charge_payment, send_confirmation
@@ -11,13 +13,14 @@ TASK_QUEUE = "order-processing"
 
 async def main():
     logging.basicConfig(level=logging.INFO)
-    client = await Client.connect("localhost:7233")
+    client = await Client.connect("localhost:7233", data_converter=pydantic_data_converter)
 
     worker = Worker(
         client,
         task_queue=TASK_QUEUE,
         workflows=[OrderWorkflow],
         activities=[validate_order, summarize_order, charge_payment, send_confirmation],
+        plugins=[PydanticAIPlugin()],
     )
 
     print(f"Worker started on task queue '{TASK_QUEUE}'. Press Ctrl+C to stop.")

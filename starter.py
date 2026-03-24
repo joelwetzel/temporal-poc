@@ -1,5 +1,6 @@
 import asyncio
 from temporalio.client import Client
+from temporalio.contrib.pydantic import pydantic_data_converter
 
 from workflows.order_workflow import OrderWorkflow
 
@@ -7,7 +8,7 @@ TASK_QUEUE = "order-processing"
 
 
 async def main():
-    client = await Client.connect("localhost:7233")
+    client = await Client.connect("localhost:7233", data_converter=pydantic_data_converter)
 
     result = await client.execute_workflow(
         OrderWorkflow.run,
