@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Worker",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/worker.py",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "console": "integratedTerminal"
+        }
+    ]
+}

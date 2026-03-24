@@ -4,7 +4,7 @@ from temporalio.client import Client
 from temporalio.worker import Worker
 
 from workflows.order_workflow import OrderWorkflow
-from activities.order_activities import validate_order, charge_payment, send_confirmation
+from activities.order_activities import validate_order, summarize_order, charge_payment, send_confirmation
 
 TASK_QUEUE = "order-processing"
 
@@ -17,7 +17,7 @@ async def main():
         client,
         task_queue=TASK_QUEUE,
         workflows=[OrderWorkflow],
-        activities=[validate_order, charge_payment, send_confirmation],
+        activities=[validate_order, summarize_order, charge_payment, send_confirmation],
     )
 
     print(f"Worker started on task queue '{TASK_QUEUE}'. Press Ctrl+C to stop.")

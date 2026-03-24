@@ -2,7 +2,7 @@ from datetime import timedelta
 from temporalio import workflow
 
 with workflow.unsafe.imports_passed_through():
-    from activities.order_activities import validate_order, charge_payment, send_confirmation
+    from activities.order_activities import validate_order, summarize_order, charge_payment, send_confirmation
 
 
 @workflow.defn
@@ -17,6 +17,12 @@ class OrderWorkflow:
             start_to_close_timeout=timedelta(seconds=30),
         )
 
+        summary = await workflow.execute_activity(
+            summarize_order,
+            order,
+            start_to_close_timeout=timedelta(seconds=60)
+        )
+
         transaction_id = await workflow.execute_activity(
             charge_payment,
             args=[order_id, amount],
@@ -26,7 +32,7 @@ class OrderWorkflow:
         await workflow.execute_activity(
             send_confirmation,
             args=[order_id, transaction_id],
-            start_to_close_timeout=timedelta(seconds=30),
+            start_to_close_timeout=timedelta(seconds=60),
         )
 
         return {
@@ -35,4 +41,5 @@ class OrderWorkflow:
             "amount": amount,
             "transaction_id": transaction_id,
             "status": "completed",
+            "summary": summary
         }
