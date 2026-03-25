@@ -20,13 +20,13 @@ class OrderWorkflow(PydanticAIWorkflow):
             start_to_close_timeout=timedelta(seconds=30),
         )
 
-        # summary = await workflow.execute_activity(
-        #     summarize_order,
-        #     order,
-        #     start_to_close_timeout=timedelta(seconds=60)
-        # )
+        summary = await workflow.execute_activity(
+            summarize_order,
+            order,
+            start_to_close_timeout=timedelta(seconds=60)
+        )
 
-        summary = (await temporal_agent.run(str(order))).output
+        # summary = (await temporal_agent.run(str(order))).output
 
         transaction_id = await workflow.execute_activity(
             charge_payment,

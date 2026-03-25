@@ -2,11 +2,7 @@ import uuid
 import asyncio
 from temporalio import activity
 
-from pydantic_ai import Agent
-from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.openai import OpenAIProvider
-
-from tools.order_tools import calculate_shipping_cost
+from agents.order_agents import agent
 
 @activity.defn
 async def validate_order(order_id: str) -> dict:
@@ -19,24 +15,9 @@ async def validate_order(order_id: str) -> dict:
 async def summarize_order(order_details: dict) -> str:
     activity.logger.info("Summarizing order")
 
-    model = OpenAIChatModel(
-        "Qwen/Qwen3-Coder-30B-A3B-Instruct",
-        provider=OpenAIProvider(
-            base_url="https://router.huggingface.co/v1",
-            api_key="PUT API KEY HERE",
-        ),
-    )
-    agent = Agent(
-        model,
-        instructions=(
-            "Summarize the order from the details. "
-            "Use the calculate_shipping_cost tool to compute the estimated shipping cost "
-            "and include it in your summary."
-        ),
-        tools=[calculate_shipping_cost],
-    )
-    result = await agent.run(str(order_details))
-    return result.output
+    async with agent:
+      result = await agent.run(str(order_details))
+      return result.output
 
 
 @activity.defn
